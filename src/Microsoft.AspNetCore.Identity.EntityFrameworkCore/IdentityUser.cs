@@ -150,6 +150,21 @@ namespace Microsoft.AspNetCore.Identity.EntityFrameworkCore
         public virtual int AccessFailedCount { get; set; }
 
         /// <summary>
+        /// Gets or sets the date and time, in UTC, when the user was created.
+        /// </summary>
+        public virtual DateTimeOffset? CreateDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date and time, in UTC, when the user last signed in.
+        /// </summary>
+        public virtual DateTimeOffset? LastSignInDate { get; set; }
+
+        /// <summary>
+        /// Gets or sets the date and time, in UTC, when the user last changed his password.
+        /// </summary>
+        public virtual DateTimeOffset? LastPasswordChangeDate { get; set; }
+
+        /// <summary>
         /// Navigation property for the roles this user belongs to.
         /// </summary>
         public virtual ICollection<TUserRole> Roles { get; } = new List<TUserRole>();
