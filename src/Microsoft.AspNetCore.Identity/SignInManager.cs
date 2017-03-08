@@ -162,7 +162,7 @@ namespace Microsoft.AspNetCore.Identity
             var auth = new AuthenticateContext(Options.Cookies.ApplicationCookieAuthenticationScheme);
             await Context.Authentication.AuthenticateAsync(auth);
             var authenticationMethod = auth.Principal?.FindFirstValue(ClaimTypes.AuthenticationMethod);
-            await SignInAsync(user, new AuthenticationProperties(auth.Properties), authenticationMethod);
+            await SignInAsync(user, new AuthenticationProperties(auth.Properties), authenticationMethod, updateLastSignIn: false);
         }
 
         /// <summary>
@@ -171,8 +171,9 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="user">The user to sign-in.</param>
         /// <param name="isPersistent">Flag indicating whether the sign-in cookie should persist after the browser is closed.</param>
         /// <param name="authenticationMethod">Name of the method used to authenticate the user.</param>
+        /// <param name="updateLastSignIn">If true, will update the last sign for the user if supported.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        public virtual Task SignInAsync(TUser user, bool isPersistent, string authenticationMethod = null)
+        public virtual Task SignInAsync(TUser user, bool isPersistent, string authenticationMethod = null, bool updateLastSignIn = true)
         {
             return SignInAsync(user, new AuthenticationProperties { IsPersistent = isPersistent }, authenticationMethod);
         }
@@ -183,8 +184,9 @@ namespace Microsoft.AspNetCore.Identity
         /// <param name="user">The user to sign-in.</param>
         /// <param name="authenticationProperties">Properties applied to the login and authentication cookie.</param>
         /// <param name="authenticationMethod">Name of the method used to authenticate the user.</param>
+        /// <param name="updateLastSignIn">If true, will update the last sign for the user if supported.</param>
         /// <returns>The task object representing the asynchronous operation.</returns>
-        public virtual async Task SignInAsync(TUser user, AuthenticationProperties authenticationProperties, string authenticationMethod = null)
+        public virtual async Task SignInAsync(TUser user, AuthenticationProperties authenticationProperties, string authenticationMethod = null, bool updateLastSignIn = true)
         {
             var userPrincipal = await CreateUserPrincipalAsync(user);
             // Review: should we guard against CreateUserPrincipal returning null?
@@ -195,6 +197,10 @@ namespace Microsoft.AspNetCore.Identity
             await Context.Authentication.SignInAsync(Options.Cookies.ApplicationCookieAuthenticationScheme,
                 userPrincipal,
                 authenticationProperties ?? new AuthenticationProperties());
+            if (updateLastSignIn && UserManager.SupportsUserActivity)
+            {
+                await UserManager.UpdateLastSignInDateAsync(user);
+            }
         }
 
         /// <summary>
