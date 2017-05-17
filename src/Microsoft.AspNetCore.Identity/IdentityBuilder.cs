@@ -174,7 +174,7 @@ namespace Microsoft.AspNetCore.Identity
             var userManagerType = typeof(UserManager<>).MakeGenericType(UserType);
             var customType = typeof(TUserManager);
             if (userManagerType == customType ||
-                !userManagerType.GetTypeInfo().IsAssignableFrom(customType.GetTypeInfo()))
+                !customType.GetTypeInfo().IsAssignableFrom(userManagerType.GetTypeInfo()))
             {
                 throw new InvalidOperationException(Resources.FormatInvalidManagerType(customType.Name, "UserManager", UserType.Name));
             }
@@ -192,7 +192,7 @@ namespace Microsoft.AspNetCore.Identity
             var managerType = typeof(RoleManager<>).MakeGenericType(RoleType);
             var customType = typeof(TRoleManager);
             if (managerType == customType ||
-                !managerType.GetTypeInfo().IsAssignableFrom(customType.GetTypeInfo()))
+                !customType.GetTypeInfo().IsAssignableFrom(managerType.GetTypeInfo()))
             {
                 throw new InvalidOperationException(Resources.FormatInvalidManagerType(customType.Name, "RoleManager", RoleType.Name));
             }
